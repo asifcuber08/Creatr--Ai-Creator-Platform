@@ -8,8 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { features, platformTabs } from "@/lib/data";
-import { ArrowRight } from "lucide-react";
+import { features, platformTabs, socialProofStats } from "@/lib/data";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -141,59 +141,98 @@ export default function Home() {
       </section>
 
       <section className="relative z-10 py-16 sm:py-24 px-4 sm:px-6">
-        <div className="text-center mb-12 sm:mb-16 lg:mb-20">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
-            <span className="gradient-text-primary">How it works</span>
-          </h2>
-          <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto px-4">
-            Three powerful modules working together to supercharge your content
-            creation.
-          </p>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-1/3">
-            <div className="space-y-4">
-              {platformTabs.map((tab, index) => (
-                <Button
-                  key={index}
-                  variant={activeTab === index ? "outline" : "ghost"}
-                  onClick={() => setActiveTab(index)}
-                  className="w-full justify-start h-auto p-6"
-                >
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                        activeTab === index
-                          ? "bg-gradient-to-br from-purple-500 to-blue-500"
-                          : "bg-muted"
-                      }`}
-                    >
-                      <tab.icon className="w-6 h-6" />
-                    </div>
-                    <div className="text-left">
-                      <h3 className="font-bold text-lg">{tab.title}</h3>
-                    </div>
-                  </div>
-                </Button>
-              ))}
-            </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16 lg:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 sm:mb-6">
+              <span className="gradient-text-primary">How it works</span>
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto px-4">
+              Three powerful modules working together to supercharge your
+              content creation.
+            </p>
           </div>
 
-          <div className="lg:w-2/3">
-            <Card className="bg-gray-900/50 border-gray-800">
-              <CardHeader>
-                <CardTitle>{platformTabs[activeTab].title}</CardTitle>
-                <CardDescription>{platformTabs[activeTab].description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                
-                
-              </CardContent>
-            </Card>
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="lg:w-1/3">
+              <div className="space-y-4">
+                {platformTabs.map((tab, index) => (
+                  <Button
+                    key={index}
+                    variant={activeTab === index ? "outline" : "ghost"}
+                    onClick={() => setActiveTab(index)}
+                    className="w-full justify-start h-auto p-6"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                          activeTab === index
+                            ? "bg-gradient-to-br from-purple-500 to-blue-500"
+                            : "bg-muted"
+                        }`}
+                      >
+                        <tab.icon className="w-6 h-6" />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-bold text-lg">{tab.title}</h3>
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="lg:w-2/3">
+              <Card className="bg-gray-900/50 border-gray-800">
+                <CardHeader>
+                  <CardTitle>{platformTabs[activeTab].title}</CardTitle>
+                  <CardDescription>
+                    {platformTabs[activeTab].description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {platformTabs[activeTab].features.map((feature, index) => (
+                      <div key={index} className="flex items-center gap-3">
+                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                        <span className="text-gray-300">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
+
+      <section className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-r from-gray-900/50 to-purple-900/20">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-12 sm:mb-16">
+            <span className="gradient-text-primary">
+              Loved by creators worldwide
+            </span>
+          </h2>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-6 lg:gap-8">
+            {socialProofStats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <stat.icon className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                </div>
+
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-black mb-2 gradient-text-accent">
+                  {stat.metric}
+                </div>
+                <div className="text-gray-400 text-base sm:text-lg">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className=""></section>
     </div>
   );
 }
