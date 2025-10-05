@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,8 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { features, platformTabs, socialProofStats } from "@/lib/data";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import {
+  features,
+  platformTabs,
+  socialProofStats,
+  testimonials,
+} from "@/lib/data";
+import { ArrowRight, CheckCircle, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -232,7 +238,135 @@ export default function Home() {
         </div>
       </section>
 
-      <section className=""></section>
+      {/* Testimonials */}
+      <section
+        id="testimonials"
+        className="relative z-10 py-16 sm:py-24 px-4 sm:px-6"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-4 sm:mb-6">
+              <span className="gradient-text-primary">What creators say</span>
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <Card
+                key={index}
+                className="transition-all duration-300 hover:shadow-lg card-glass"
+              >
+                <CardContent className="p-8">
+                  <div className="flex items-center gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                      />
+                    ))}
+                  </div>
+                  <p className="mb-6 leading-relaxed text-gray-300">
+                    &quot;{testimonial.content}&quot;
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-12 h-12">
+                      <Image
+                        src={`https://images.unsplash.com/photo-${testimonial.imageId}?w=100&h=100&fit=crop&crop=face`}
+                        alt={testimonial.name}
+                        fill
+                        className="rounded-full border-2 border-gray-700 object-cover"
+                        sizes="48px"
+                      />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-white">
+                        {testimonial.name}
+                      </div>
+                      <div className="text-gray-400 text-sm">
+                        {testimonial.role}
+                      </div>
+                      <Badge variant="secondary" className="mt-1">
+                        {testimonial.company}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-r from-gray-900/50 to-purple-900/20">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black mb-6 sm:mb-8">
+            <span className="gradient-text-primary">Ready to create?</span>
+          </h2>
+          <p className="text-xl text-gray-400 mb-8 sm:mb-12 max-w-2xl mx-auto">
+            Join thousands of creators who are already building their audiences
+            and growing their businesses with our AI-powered platform.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/dashboard">
+              <Button
+                size="xl"
+                variant="primary"
+                className="rounded-full w-full text-white"
+              >
+                Start Your Journey
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/feed">
+              <Button
+                size="xl"
+                variant="outline"
+                className="rounded-full w-full"
+              >
+                Explore the Feed
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer Section
+      <footer className="relative z-10 bg-black/60 backdrop-blur-xl border-t border-gray-800 text-gray-400 py-8 sm:py-10 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <div>
+            <h3 className="text-2xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 bg-clip-text text-transparent">
+              Creatr
+            </h3>
+            <p className="text-sm mt-1 text-gray-500">
+              Built with ❤️ by{" "}
+              <span className="text-purple-300 font-medium">Asif Shamim</span>
+            </p>
+          </div>
+
+          <div className="flex flex-wrap justify-center md:justify-end gap-4 text-sm font-light">
+            <Link
+              href="/privacy"
+              className="hover:text-white transition-colors"
+            >
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-white transition-colors">
+              Terms
+            </Link>
+            <Link
+              href="/contact"
+              className="hover:text-white transition-colors"
+            >
+              Contact
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-6 border-t border-gray-800 pt-4 text-center text-sm text-gray-500">
+          © {new Date().getFullYear()} Creatr. All rights reserved.
+        </div>
+      </footer> */}
     </div>
   );
 }
