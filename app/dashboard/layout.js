@@ -146,13 +146,13 @@ const DashboardLayout = ({ children }) => {
               </Button>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="h-10 flex items-center space-x-4">
               <UserButton />
             </div>
           </div>
         </header>
 
-        <main className="mt-16">{children}</main>
+        <main className="mt-[72px]">{children}</main>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import Footer from "@/components/footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -331,6 +332,7 @@ export default function Home() {
         </div>
       </section>
 
+      <Footer />
       {/* Footer Section
       <footer className="relative z-10 bg-black/60 backdrop-blur-xl border-t border-gray-800 text-gray-400 py-8 sm:py-10 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
