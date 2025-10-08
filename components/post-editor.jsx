@@ -8,6 +8,9 @@ import { useConvexMutation } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import PostEditorHeader from "./post-editor-header";
+import PostEditorContent from "./post-editor-content";
+import PostEditorSettings from "./post-editor-settings";
+import { toast } from "sonner";
 
 const postSchema = z.object({
   title: z.string().min(1, "Title is required").max(200, "Title too long"),
@@ -19,9 +22,10 @@ const postSchema = z.object({
 });
 
 const PostEditor = ({ initialData = null, mode = "create" }) => {
-  const [isSettingOpen, setIsSettingOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [imageModalType, setImageModalType] = useState("featured");
+  const [quillRef, setQuillRef] = useState(null);
 
   const router = useRouter();
 
@@ -47,37 +51,73 @@ const PostEditor = ({ initialData = null, mode = "create" }) => {
     },
   });
 
-  const handleSave = () => {
-    
-  }
+  const { handleSubmit, watch, setValue } = form;
+  const watchedValues = watch();
+
+  // Auto-save for drafts
+  useEffect(() => {
+    if (!watchedValues.title && !watchedValues.content) return;
+
+    const autoSave = setInterval(() => {
+      if (watchedValues.title || watchedValues.content) {
+        if (mode === "create") handleSave(true); // Silent save
+      }
+    }, 30000);
+
+    return () => clearInterval(autoSave);
+  }, [watchedValues.title, watchedValues.content]);
+
+  const onSubmit = async (data, action, silent = false) => {};
+
+  const handleSave = (silent = false) => {
+    handleSubmit((data) => onSubmit(data, "draft", silent))();
+  };
+
   const handlePublish = () => {
-    
-  }
+    handleSubmit((data) => onSubmit(data, "publish"))();
+  };
+
   const handleSchedule = () => {
-    
-  }
-  
+    if (!watchedValues.scheduledFor) {
+      toast.error("Please select a date and time to schedule");
+      return;
+    }
+    handleSubmit((data) => onSubmit(data, "schedule"))();
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       {/* Header */}
       <PostEditorHeader
-      mode={mode}
-      initialData={initialData}
-      isPublishing={isCreateLoading || isUpdating}
-      onSave={handleSave}
-      onPublish={handlePublish}
-      onSchedule={handleSchedule}
-      onSettingsOpen={()=> setIsSettingOpen(true)}
-      onBack={() => router.push("/dashboard")}
+        mode={mode}
+        initialData={initialData}
+        isPublishing={isCreateLoading || isUpdating}
+        onSave={handleSave}
+        onPublish={handlePublish}
+        onSchedule={handleSchedule}
+        onSettingsOpen={() => setIsSettingsOpen(true)}
+        onBack={() => router.push("/dashboard")}
       />
 
       {/* Editor */}
+      <PostEditorContent
+        form={form}
+        setQuillRef={setQuillRef}
+        onImageUpload={(type) => {
+          setImageModalType(type);
+          setIsImageModalOpen(true);
+        }}
+      />
 
       {/* Setting Dialog */}
+      <PostEditorSettings
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        form={form}
+        mode={mode}
+      />
 
       {/* Image upload Dialog */}
-
     </div>
   );
 };

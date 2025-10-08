@@ -1,4 +1,5 @@
-import { V } from "framer-motion/dist/types.d-DsEeKk6G";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 
 // Get user's draft (there should only be one)
@@ -26,7 +27,7 @@ export const create = mutation({
     title: v.string(),
     content: v.string(),
     status: v.union(v.literal("draft"), v.literal("published")),
-    tags: v.optional(v.array(V.string())),
+    tags: v.optional(v.array(v.string())),
     category: v.optional(v.string()),
     featuredImage: v.string(v.string()),
     scheduledFor: v.optional(v.number()),
