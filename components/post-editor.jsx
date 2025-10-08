@@ -11,6 +11,7 @@ import PostEditorContent from "./post-editor-content";
 import PostEditorSettings from "./post-editor-settings";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
+import ImageUploadModal from "./image-upload-modal";
 
 const postSchema = z.object({
   title: z.string().min(1, "Title is required").max(200, "Title too long"),
@@ -164,6 +165,16 @@ const PostEditor = ({ initialData = null, mode = "create" }) => {
       />
 
       {/* Image upload Dialog */}
+      <ImageUploadModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onImageSelect={handleImageSelect}
+        title={
+          imageModalType === "featured"
+            ? "Upload Featured Image"
+            : "Insert Image"
+        }
+      />
     </div>
   );
 };
