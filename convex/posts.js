@@ -29,7 +29,7 @@ export const create = mutation({
     status: v.union(v.literal("draft"), v.literal("published")),
     tags: v.optional(v.array(v.string())),
     category: v.optional(v.string()),
-    featuredImage: v.string(v.string()),
+    featuredImage: v.optional(v.string()),
     scheduledFor: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -49,34 +49,34 @@ export const create = mutation({
 
     // If publishing and we have an existing draft, update it to published
     if (args.status === "published" && existingDraft) {
-      await ctx.db.patch(existingDraft.id, {
+      await ctx.db.patch(existingDraft._id, {
         title: args.title,
         content: args.content,
         status: "published",
         tags: args.tags || [],
         category: args.category,
         featuredImage: args.featuredImage,
-        updateAt: now,
+        updatedAt: now,
         publishedAt: now,
         scheduledFor: args.scheduledFor,
       });
-
       return existingDraft._id;
     }
 
     // If creating a draft and we have an existing draft, update it
     if (args.status === "draft" && existingDraft) {
-      await ctx.db.patch(existingDraft.id, {
+      await ctx.db.patch(existingDraft._id, {
         title: args.title,
         content: args.content,
         tags: args.tags || [],
         category: args.category,
         featuredImage: args.featuredImage,
+        updatedAt: now,
         scheduledFor: args.scheduledFor,
       });
-
       return existingDraft._id;
     }
+
 
     // Create new post (either first draft or direct publish)
     const postId = await ctx.db.insert("posts", {
@@ -88,7 +88,7 @@ export const create = mutation({
       category: args.category,
       featuredImage: args.featuredImage,
       createdAt: now,
-      updateAt: now,
+      updatedAt: now,
       publishedAt: args.status === "published" ? now : undefined,
       scheduledFor: args.scheduledFor,
       viewCount: 0,
@@ -102,13 +102,13 @@ export const create = mutation({
 // Update an existing post
 export const update = mutation({
   args: {
-    id: v.string("posts"),
-    title: v.string(),
-    content: v.string(),
-    status: v.union(v.literal("draft"), v.literal("published")),
+    id: v.id("posts"),
+    title: v.optional(v.string()),
+    content: v.optional(v.string()),
+    status: v.optional(v.union(v.literal("draft"), v.literal("published"))),
     tags: v.optional(v.array(v.string())),
     category: v.optional(v.string()),
-    featuredImage: v.string(v.string()),
+    featuredImage: v.optional(v.string()),
     scheduledFor: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -144,6 +144,7 @@ export const update = mutation({
     if (args.status !== undefined) {
       updateData.status = args.status;
 
+      // If publishing for the first time
       if (args.status === "published" && post.status === "draft") {
         updateData.publishedAt = now;
       }
