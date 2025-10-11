@@ -13,8 +13,11 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDropzone } from "react-dropzone";
-import { Loader2, Upload } from "lucide-react";
+import { Check, Loader2, Upload, Wand2 } from "lucide-react";
 import { toast } from "sonner";
+import { uploadToImageKit } from "@/lib/imagekit";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 
 // Form validation schema
 const transformationSchema = z.object({
@@ -66,7 +69,7 @@ const ImageUploadModal = ({
   title = "Upload & Transform Image",
 }) => {
   const [activeTab, setActiveTab] = useState("upload");
-  const [uploadImage, setUploadImage] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const [transformedImage, setTransformedImage] = useState(null);
@@ -106,7 +109,8 @@ const ImageUploadModal = ({
       return;
     }
 
-    if (file.size > 10 * 1024) {
+    // Validate file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
       toast.error("File size must be less than 10MB");
       return;
     }
@@ -114,9 +118,22 @@ const ImageUploadModal = ({
     setIsUploading(true);
 
     try {
-      
+      const fileName = `post-image-${Date.now()}-${file.name}`;
+      const result = await uploadToImageKit(file, fileName);
+
+      if (result.success) {
+        setUploadedImage(result.data);
+        setTransformedImage(result.data.url);
+        setActiveTab("transform");
+        toast.success("Image uploaded successfully!");
+      } else {
+        toast.error(result.error || "Upload failed");
+      }
     } catch (error) {
-      
+      console.log("Upload error:", error);
+      toast.error("Upload failed. Please try again.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -138,10 +155,10 @@ const ImageUploadModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="account" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="upload">Upload</TabsTrigger>
-            <TabsTrigger value="transform" disabled={!uploadImage}>
+            <TabsTrigger value="transform" disabled={!uploadedImage}>
               Transform
             </TabsTrigger>
           </TabsList>
@@ -168,13 +185,35 @@ const ImageUploadModal = ({
                         : "Drag & drop an image here"}
                     </p>
                     <p className="text-sm text-slate-400 mt-2">
-                      or click to select a file (JPG, PNG, WebP, GIF - Max
-                      100MB)
+                      or click to select a file (JPG, PNG, WebP, GIF - Max 10MB)
                     </p>
                   </div>
                 </div>
               )}
             </div>
+
+            {uploadedImage && (
+              <div className="text-center space-y-4">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-500/20 text-green-300 border-green-500/30"
+                >
+                  <Check className="h-3 w-3 mr-1" />
+                  Image uploaded successfully!
+                </Badge>
+                <div className="text-sm text-slate-400">
+                  {uploadedImage.width} × {uploadedImage.height} •{" "}
+                  {Math.round(uploadedImage.size / 1024)}KB
+                </div>
+                <Button
+                  onClick={() => setActiveTab("transform")}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                >
+                  <Wand2 className="h-4 w-4 mr-2" />
+                  Start Transforming
+                </Button>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="transform" className="space-y-6">
