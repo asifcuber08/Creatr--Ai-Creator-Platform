@@ -13,6 +13,8 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDropzone } from "react-dropzone";
+import { Loader2, Upload } from "lucide-react";
+import { toast } from "sonner";
 
 // Form validation schema
 const transformationSchema = z.object({
@@ -93,7 +95,30 @@ const ImageUploadModal = ({
     // resetForm();
   };
 
-  const onDrop = async(acceptedFiles) => {};
+  const onDrop = async (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
+
+    console.log(file);
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    if (file.size > 10 * 1024) {
+      toast.error("File size must be less than 10MB");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      
+    } catch (error) {
+      
+    }
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -122,7 +147,34 @@ const ImageUploadModal = ({
           </TabsList>
 
           <TabsContent value="upload" className="space-y-4">
-            upload
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors`}
+            >
+              <input {...getInputProps()} />
+
+              {isUploading ? (
+                <div className="space-y-3">
+                  <Loader2 className="h-12 w-12 mx-auto animate-spin text-purple-400" />
+                  <p className="text-slate-300">Uploading image...</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <Upload className="h-12 w-12 mx-auto text-slate-400" />
+                  <div className="">
+                    <p className="text-lg text-white">
+                      {isDragActive
+                        ? "Drop the image here"
+                        : "Drag & drop an image here"}
+                    </p>
+                    <p className="text-sm text-slate-400 mt-2">
+                      or click to select a file (JPG, PNG, WebP, GIF - Max
+                      100MB)
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="transform" className="space-y-6">
