@@ -13,7 +13,7 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDropzone } from "react-dropzone";
-import { Check, Loader2, Upload, Wand2 } from "lucide-react";
+import { Check, ImageIcon, Loader2, Upload, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { uploadToImageKit } from "@/lib/imagekit";
 import { Badge } from "./ui/badge";
@@ -93,9 +93,17 @@ const ImageUploadModal = ({
 
   const watchedValues = watch();
 
+  // Reset form
+  const resetForm = () => {
+    setUploadedImage(null);
+    setTransformedImage(null);
+    setActiveTab("upload");
+    reset();
+  };
+
   const handleClose = () => {
     onClose();
-    // resetForm();
+    resetForm();
   };
 
   const onDrop = async (acceptedFiles) => {
@@ -217,7 +225,43 @@ const ImageUploadModal = ({
           </TabsContent>
 
           <TabsContent value="transform" className="space-y-6">
-            transform
+            <div className="grid lg:grid-cols-2 gap-6 max-h-[60vh] overflow-y-auto">
+              <div className="space-y-6"></div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white flex items-center">
+                  <ImageIcon className="h-5 w-5 mr-2" />
+                  Preview
+                </h3>
+
+                {transformedImage && (
+                  <div className="relative">
+                    <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                      <img
+                        src={transformedImage}
+                        alt="Transformed preview"
+                        className="w-full h-auto max-h-96 object-contain rounded-lg mx-auto"
+                        onError={() => {
+                          toast.error("Failed to load transformed image");
+                          setTransformedImage(uploadedImage?.url);
+                        }}
+                      />
+                    </div>
+
+                    {isTransforming && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
+                        <div className="bg-slate-800 rounded-lg p-4 flex items-center space-x-3">
+                          <Loader2 className="h-5 w-5 animate-spin text-purple-400" />
+                          <span className="text-white">
+                            Applying transformations...
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </DialogContent>
