@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import z, { set } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useConvexMutation } from "@/hooks/use-convex-query";
 import { useRouter } from "next/navigation";
@@ -130,7 +130,23 @@ const PostEditor = ({ initialData = null, mode = "create" }) => {
     handleSubmit((data) => onSubmit(data, "schedule"))();
   };
 
-  const handleImageSelect = (imageData) => {};
+  const handleImageSelect = (imageData) => {
+    if(imageModalType === "featured") {
+      setValue("featuredImage", imageData.url);
+      toast.success("Featured image updated!");
+    } else if(imageModalType === "content" && quillRef) {
+      const quill = quillRef.getEditor();
+      const range = quill.getSelection();
+
+      const index = range ? range.index : quill.getLength();
+
+      quill.insertEmbed(index, "image", imageData.url);
+      quill.setSelection(index + 1);
+      toast.success("Image inserted");
+    }
+
+    setIsImageModalOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">

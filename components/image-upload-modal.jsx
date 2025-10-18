@@ -153,6 +153,22 @@ const ImageUploadModal = ({
     multiple: false,
   });
 
+  // Handle image selection
+  const handleSelectImage = () => {
+    if (transformedImage) {
+      onImageSelect({
+        url: transformedImage,
+        originalUrl: uploadedImage?.url,
+        fileId: uploadedImage?.fileId,
+        name: uploadedImage?.name,
+        width: uploadedImage?.width,
+        height: uploadedImage?.height,
+      });
+      onClose();
+      resetForm();
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="!max-w-6xl !h-[90vh] overflow-y-auto">
@@ -258,6 +274,32 @@ const ImageUploadModal = ({
                         </div>
                       </div>
                     )}
+                  </div>
+                )}
+
+                {uploadedImage && transformedImage && (
+                  <div className="text-center space-y-4">
+                    <div className="text-sm text-slate-400">
+                      Current image ready for use
+                    </div>
+
+                    <div className="flex gap-3 justify-center">
+                      <Button
+                        onClick={handleSelectImage}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        <Check className="h-4 w-4 mr-2" />
+                        Use This Image
+                      </Button>
+
+                      <Button
+                        onClick={handleClose}
+                        variant="outline"
+                        className="border-slate-600 hover:bg-slate-700"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>
