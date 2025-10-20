@@ -126,7 +126,7 @@ export const update = mutation({
 
     const now = Date.now();
     const updateData = {
-      updateAt: now,
+      updatedAt: now,
     };
 
     // Add provided fields to update
