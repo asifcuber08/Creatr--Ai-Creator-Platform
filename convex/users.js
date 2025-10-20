@@ -99,3 +99,31 @@ export const updateUsername = mutation({
     return user._id; 
   },
 });
+
+// Get user by username (for public profiles)
+export const getByUsername = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    // if (!args.username) {
+    //   return null;
+    // }
+
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("username"), args.username))
+      .unique();
+
+    if (!user) {
+      return null;
+    }
+
+    // Return only public fields
+    return {
+      _id: user._id,
+      name: user.name,
+      username: user.username,
+      imageUrl: user.imageUrl,
+      createdAt: user.createdAt,
+    };
+  },
+});

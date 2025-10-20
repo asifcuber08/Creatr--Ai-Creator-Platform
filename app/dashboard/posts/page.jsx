@@ -70,7 +70,7 @@ const PostPage = () => {
   }
 
   const handleEditPost = (post) => {
-    router.push(`/dashboard/posts/edit/${post_id}`);
+    router.push(`/dashboard/posts/edit/${post._id}`);
   }
 
   const handleDeletePost = async (post) => {
