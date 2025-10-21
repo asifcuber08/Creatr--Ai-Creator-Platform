@@ -7,10 +7,19 @@ import { api } from "@/convex/_generated/api";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, Eye, Heart, MessageCircle } from "lucide-react";
+import {
+  Calendar,
+  Eye,
+  Heart,
+  Loader2,
+  MessageCircle,
+  Send,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 
 const PostPage = ({ params }) => {
   const { username, postId } = React.use(params);
@@ -75,7 +84,41 @@ const PostPage = ({ params }) => {
     try {
       await toggleLike.mutate({ postId });
     } catch (error) {
-      toast.error("Failed to update like")
+      toast.error("Failed to update like");
+    }
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!currentUser) {
+      toast.error("Please sign in to comment.");
+      return;
+    }
+
+    if (!commentContent.trim()) {
+      toast.error("Comment cannot be empty.");
+      return;
+    }
+
+    try {
+      await addComment({
+        postId,
+        content: commentContent.trim(),
+      });
+      setCommentContent("");
+      toast.success("Comment added!");
+    } catch (error) {
+      toast.error(error.message || "Failed to add comment.");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await deleteComment.mutate({ commentId });
+      toast.success("Comment deleted.");
+    } catch (error) {
+      toast.error(error.message || "Failed to delete comment!");
     }
   };
 
@@ -196,6 +239,52 @@ const PostPage = ({ params }) => {
         {/* Comments Section */}
         <div className="mt-12 space-y-6">
           <h2 className="text-2xl font-bold text-white">Comments</h2>
+
+          {currentUser ? (
+            <Card className="card-glass">
+              <CardContent className="p-6">
+                <form onSubmit={handleCommentSubmit} className="space-y-4">
+                  <Textarea
+                    value={commentContent}
+                    onChange={(e) => setCommentContent(e.target.value)}
+                    placeholder="Write your comment..."
+                    className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400 resize-none"
+                    rows={3}
+                    maxLength={1000}
+                  />
+
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-slate-500">
+                      {commentContent.length}/1000 characters
+                    </p>
+                    <Button
+                      type="submit"
+                      disabled={isSubmittingComment || !commentContent.trim()}
+                      variant="primary"
+                    >
+                      {isSubmittingComment ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4 mr-2" />
+                      )}
+                      Post Comment
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="card-glass">
+              <CardContent className="p-6 text-center">
+                <p className="text-slate-400 mb-4">
+                  Sign in to join the conversation
+                </p>
+                <Link href="/sign-in">
+                  <Button variant="primary">Sign in</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
 

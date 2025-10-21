@@ -17,8 +17,8 @@ export const addComment = mutation({
     }
 
     // Validate content
-    if (args.content.trim() || args.content.length > 1000) {
-      throw new Error("Comment must be between 1 and 1000 characters");
+    if (!args.content.trim() || args.content.length > 1000) {
+      throw new Error("Comment must be between 1-1000 characters");
     }
 
     const commentId = await ctx.db.insert("comments", {
@@ -27,9 +27,11 @@ export const addComment = mutation({
       authorName: user.name,
       authorEmail: user.email,
       content: args.content.trim(),
-      status: "approved",
+      status: "approved", // Auto-approve since only authenticated users can comment
       createdAt: Date.now(),
     });
+
+    return commentId;
   },
 });
 
@@ -54,7 +56,7 @@ export const getPostComments = query({
         const user = await ctx.db.get(comment.authorId);
         return {
           ...comment,
-          authorName: user
+          author: user
             ? {
                 _id: user._id,
                 name: user.name,
