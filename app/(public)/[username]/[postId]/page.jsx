@@ -14,16 +14,23 @@ import {
   Loader2,
   MessageCircle,
   Send,
+  Trash2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { BarLoader } from "react-spinners";
 
 const PostPage = ({ params }) => {
   const { username, postId } = React.use(params);
   const { user: currentUser } = useUser();
+
+  const { data: currentConvexUser } = useConvexQuery(
+    api.users.getCurrentUser,
+    currentUser ? {} : "skip"
+  );
 
   const [commentContent, setCommentContent] = useState("");
 
@@ -282,6 +289,84 @@ const PostPage = ({ params }) => {
                 <Link href="/sign-in">
                   <Button variant="primary">Sign in</Button>
                 </Link>
+              </CardContent>
+            </Card>
+          )}
+
+          {commentsLoading ? (
+            <BarLoader width={"100%"} color="#D8B4FE" />
+          ) : comments && comments.length > 0 ? (
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <Card key={comment._id} className="card-glass">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="relative w-8 h-8">
+                          {comment.author?.imageUrl ? (
+                            <Image
+                              src={comment.author.imageUrl}
+                              alt={comment.author.name}
+                              fill
+                              className="rounded-full object-cover"
+                              sizes="32px"
+                            />
+                          ) : (
+                            <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-sm font-bold">
+                              {comment.author?.name?.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+
+                        <div>
+                          <p className="font-medium text-white">
+                            {comment.author?.name || "Anonymous"}
+                          </p>
+                          <p className="text-xs text-slate-400">
+                            {new Date(comment.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Delete */}
+                      {currentConvexUser &&
+                        comment.author &&
+                        (currentConvexUser._id === comment.authorId ||
+                          currentConvexUser._id === post.authorId) && (
+                          <Button
+                            onClick={() => handleDeleteComment(comment._id)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-slate-400 hover:text-red-400"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                    </div>
+
+                    <p className="text-slate-300 whitespace-nowrap">
+                      {comment.content}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="card-glass">
+              <CardContent className="text-center py-8">
+                <MessageCircle className="h-12 w-12 mx-auto text-slate-600 mb-4" />
+                <p className="text-slate-400">No comments yet</p>
+                <p className="text-slate-500 text-sm mt-1">
+                  Be the first to share your thoughts!
+                </p>
               </CardContent>
             </Card>
           )}
