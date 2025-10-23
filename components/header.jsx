@@ -5,8 +5,8 @@ import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Unauthenticated, Authenticated } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React from "react";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 import { BarLoader } from "react-spinners";
 import { Button } from "./ui/button";
 import { LayoutDashboard } from "lucide-react";
@@ -14,6 +14,14 @@ import { LayoutDashboard } from "lucide-react";
 const Header = () => {
   const { isLoading, isAuthenticated } = useStoreUser();
   const path = usePathname();
+  const router = useRouter();
+
+  // Redirect to feed if authenticated and on landing page
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && path === "/") {
+      router.push("/feed");
+    }
+  }, [isLoading, isAuthenticated, path, router]);
 
   // Hide header on public profile and post pages (but not on feed)
   if (path !== "/" && path !== "/feed" && path.split("/").length >= 2) {
