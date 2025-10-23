@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
 import { useConvexMutation, useConvexQuery } from "@/hooks/use-convex-query";
 import { useUser } from "@clerk/nextjs";
-import { Loader2, Sparkles, TrendingUp } from "lucide-react";
+import { Loader2, Sparkles, TrendingUp, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -191,6 +191,76 @@ const FeedPage = () => {
                   Suggested Users
                 </CardTitle>
               </CardHeader>
+
+              <CardContent>
+                {suggestionsLoading ? (
+                  <div className="flex justify-center py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-purple-400" />
+                  </div>
+                ) : !suggestedUsers || suggestedUsers.length === 0 ? (
+                  <div className="text-center py-4">
+                    <p className="text-slate-400 text-sm">
+                      No suggestions available
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {suggestedUsers.map((user) => (
+                      <div key={user._id} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <Link href={`/${user.username}`}>
+                            <div className="flex items-center space-x-3 cursor-pointer">
+                              <div className="relative w-10 h-10">
+                                {user.imageUrl ? (
+                                  <Image
+                                    src={user.imageUrl}
+                                    alt={user.name}
+                                    fill
+                                    className="rounded-full object-cover"
+                                    sizes="40px"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-sm font-bold">
+                                    {user.name.charAt(0).toUpperCase()}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-white">
+                                  {user.name}
+                                </p>
+                                <p className="text-xs text-slate-400">
+                                  @{user.username}
+                                </p>
+                              </div>
+                            </div>
+                          </Link>
+                          <Button
+                            onClick={() => handleFollowToggle(user._id)}
+                            variant="outline"
+                            size="sm"
+                            className="border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white"
+                          >
+                            <UserPlus className="h-3 w-3 mr-1" />
+                            Follow
+                          </Button>
+                        </div>
+
+                        <div className="text-xs text-slate-500 pl-13">
+                          {user.followerCount} followers • {user.postCount}{" "}
+                          posts
+                        </div>
+                        {user.recentPosts && user.recentPosts.length > 0 && (
+                          <div className="text-xs text-slate-400 pl-13">
+                            Latest: "
+                            {user.recentPosts[0].title.substring(0, 30)}..."
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
             </Card>
           </div>
         </div>
