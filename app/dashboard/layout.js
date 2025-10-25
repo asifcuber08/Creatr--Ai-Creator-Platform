@@ -46,7 +46,7 @@ const sidebarItems = [
 const DashboardLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const { data: draftPost } = useConvexQuery(api.posts.getUserDraft)
+  const { data: draftPost } = useConvexQuery(api.posts.getUserDraft);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">

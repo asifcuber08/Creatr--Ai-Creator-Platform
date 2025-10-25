@@ -4,7 +4,7 @@ import { query } from "./_generated/server";
 
 export const getAnalytics = query({
   handler: async (ctx) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUsers);
+    const user = await ctx.runQuery(internal.users.getCurrentUser);
 
     // Get all user's posts
     const posts = await ctx.db
@@ -75,7 +75,7 @@ export const getAnalytics = query({
 export const getRecentActivity = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUsers);
+    const user = await ctx.runQuery(internal.users.getCurrentUser);
 
     // Get user's posts
     const posts = await ctx.db
@@ -167,7 +167,7 @@ export const getRecentActivity = query({
 export const getPostsWithAnalytics = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUsers);
+    const user = await ctx.runQuery(internal.users.getCurrentUser);
 
     // Get recent posts with enhanced data
     const posts = await ctx.db
@@ -202,7 +202,7 @@ export const getPostsWithAnalytics = query({
 // Get daily views data for chart (last 30 days)
 export const getDailyViews = query({
   handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getCurrentUsers);
+    const user = await ctx.runQuery(internal.users.getCurrentUser);
 
     // Get user's posts
     const userPosts = await ctx.db
