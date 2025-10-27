@@ -33,4 +33,4 @@ const PublicHeader = ({ link, title }) => {
   );
 };
 
-export default PublicHeader;
+export default PublicHeader; 

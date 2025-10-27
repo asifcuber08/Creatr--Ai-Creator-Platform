@@ -253,4 +253,4 @@ export const getDailyViews = query({
 
     return chartData;
   },
-});
+}); 

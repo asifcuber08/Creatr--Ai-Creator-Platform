@@ -56,4 +56,4 @@ export const useConvexMutation = (mutation) => {
   };
 
   return { mutate, data, isLoading, error };
-};
+}; 

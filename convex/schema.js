@@ -99,4 +99,4 @@ export default defineSchema({
       .index("by_post", ["postId"])
       .index("by_date", ["date"])
       .index("by_post_date", ["postId", "date"]), // For daily stats lookup
-});
+}); 

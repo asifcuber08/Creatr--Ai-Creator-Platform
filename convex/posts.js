@@ -217,4 +217,4 @@ export const deletePost = mutation({
     await ctx.db.delete(args.id);
     return { success: true };
   },
-});
+}); 

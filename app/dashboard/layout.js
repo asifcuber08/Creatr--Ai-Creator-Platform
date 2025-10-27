@@ -47,13 +47,23 @@ const DashboardLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
   const { data: draftPost } = useConvexQuery(api.posts.getUserDraft);
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
+
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
+
       {/* Mobile sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full w-64 bg-slate-800/50 backdrop:blur-sm border-r border-s-slate-700 z-50 transition-transform duration-300 lg:translate-x-0",
+          "fixed top-0 left-0 h-full w-64 bg-slate-800/50 backdrop-blur-md border-r border-slate-700 z-50 transition-transform duration-300 lg:translate-x-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -138,7 +148,7 @@ const DashboardLayout = ({ children }) => {
 
       <div className="ml-0 lg:ml-64">
         <header className="fixed w-full top-0 right-0 z-30 bg-slate-800/80 backdrop-blur-md border-b border-slate-700">
-          <div className="flex items-center justify-between px-4 lg:px-8 py-4">
+          <div className="flex items-center justify-between px-4 lg:px-8 py-2.5">
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
@@ -155,7 +165,7 @@ const DashboardLayout = ({ children }) => {
           </div>
         </header>
 
-        <main className="mt-[72px]">{children}</main>
+        <main className="mt-16">{children}</main>
       </div>
     </div>
   );

@@ -198,4 +198,4 @@ export const getTrendingPosts = query({
 
     return postsWithAuthors.filter((post) => post.author !== null);
   },
-});
+});  

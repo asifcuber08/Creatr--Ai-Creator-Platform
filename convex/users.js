@@ -126,4 +126,4 @@ export const getByUsername = query({
       createdAt: user.createdAt,
     };
   },
-});
+}); 
